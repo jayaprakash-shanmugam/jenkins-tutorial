@@ -1,10 +1,16 @@
 pipeline {
-    agent any  // Use any agent
-
+    agent any
     stages {
-        stage('Build Angular UI') {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/jayaprakash-shanmugam/jenkins-tutorial.git'
+            }
+        }
+        stage('Build Angular Frontend') {
             agent {
-                docker 'node:14'  // Docker image for Angular build
+                docker {
+                    image 'node:14'
+                }
             }
             steps {
                 dir('angular-frontend') {
@@ -13,15 +19,30 @@ pipeline {
                 }
             }
         }
-
         stage('Build Go Backend') {
             agent {
-                docker 'golang:1.19'  // Docker image for Go build
+                docker {
+                    image 'golang:1.19'
+                }
             }
             steps {
                 dir('go-backend') {
-                    sh 'go build'
+                    sh 'go build -o app'
                 }
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Example test steps can be added here for Angular and Go
+                    echo 'Running tests...'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application...'
+                // Add deployment logic here
             }
         }
     }
